@@ -1,0 +1,18 @@
+.header-body {
+  background-color: #e18b1d;
+}
+
+.logo-section {
+  align-items: center;
+}
+
+/* .brand-logo {
+  display: flex;
+  align-items: center;
+  padding-left: 50px;
+} */
+
+.navigation-section {
+  display: inline;
+  text-align: center;
+}
