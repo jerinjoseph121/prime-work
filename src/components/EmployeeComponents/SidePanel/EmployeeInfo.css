@@ -5,6 +5,10 @@
   color: #707070;
 }
 
+.employee-info-body:hover {
+  background-color: #e18b1d;
+}
+
 #employee-name-label {
   font-size: 50px;
   padding-top: 20px;
@@ -18,4 +22,5 @@
 .employee-info-seperator {
   background-color: #707070;
   border: 2px solid;
+  margin-bottom: 0px;
 }

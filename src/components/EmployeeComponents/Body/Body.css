@@ -3,7 +3,6 @@
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
     Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: #707070;
-  padding-left: 30px !important;
 }
 
 .employee-name-label {
@@ -19,5 +18,21 @@
 .employee-details {
   padding-top: 42px;
   font-size: 65px;
-  padding-bottom: 54px;
+  padding-bottom: 10px;
+}
+
+.employee-section-seperator {
+  background-color: #707070;
+  border: 4px solid;
+  margin-bottom: 0px;
+}
+
+.task-label {
+  font-size: 100px;
+}
+
+.employee-task-details {
+  padding-top: 42px;
+  font-size: 65px;
+  padding-bottom: 20px;
 }
