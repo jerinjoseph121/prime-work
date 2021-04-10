@@ -7,21 +7,24 @@ import React from "react";
 
 function App() {
   const [employeeId, setEmployeeId] = useState(0);
+  const [panel, changePanel] = useState(1);
 
   const changeEmployeeId = (val) => {
     setEmployeeId(val);
   };
+  const changeMainPanel = (val) => {
+    changePanel(val);
+  };
 
   return (
     <div className="App">
-      <Header />
+      <Header changePanel={changeMainPanel} panel={panel} />
       <div className="row no-gutters main-body">
         <div className="col-4">
           <SidePanel displayEmployee={changeEmployeeId} />
         </div>
         <div className="col-8">
-          {/* <TaskBody /> */}
-          <Body id={employeeId} />
+          {panel ? <Body id={employeeId} /> : <TaskBody id={employeeId} />}
         </div>
       </div>
     </div>

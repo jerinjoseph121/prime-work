@@ -18,8 +18,7 @@ export default function SidePanel(props) {
         {employeeData.map((employee_info) => {
           return (
             <EmployeeInfo
-              key={employeeData.indexOf(employee_info)}
-              id={employeeData.indexOf(employee_info)}
+              key={employee_info.id}
               employeeInfo={employee_info}
               changeEmployee={props.displayEmployee}
             />

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import "./EmployeeInfo.css";
 
 export default function EmployeeInfo(props) {
@@ -6,7 +6,7 @@ export default function EmployeeInfo(props) {
     <div
       className="container p-0 employee-info-body"
       onClick={() => {
-        props.changeEmployee(props.id);
+        props.changeEmployee(props.employeeInfo.id);
       }}
     >
       <div id="employee-name-label">{props.employeeInfo.name}</div>
