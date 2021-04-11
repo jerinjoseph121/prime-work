@@ -2,7 +2,7 @@ import React from "react";
 import ScrollBar from "react-scrollbar";
 import "./SidePanel.css";
 import EmployeeInfo from "./EmployeeInfo";
-import { employeeData } from "../../../data/EmployeeData";
+import { employeeData } from "../../data/EmployeeData";
 
 export default function SidePanel(props) {
   return (
