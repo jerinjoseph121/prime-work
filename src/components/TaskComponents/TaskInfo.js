@@ -1,9 +1,13 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import axios from "axios";
 import "./TaskInfo.css";
 // import { employeeData } from "../../data/EmployeeData";
 
 export default function TaskInfo(props) {
   let taskDetails;
+
+  const url = "http://localhost:5000";
 
   const months = [
     "January",
@@ -25,6 +29,14 @@ export default function TaskInfo(props) {
     const Month = month[d.getMonth()];
     const Year = d.getFullYear();
     return Date + " " + Month + ", " + Year;
+  }
+
+  function deleteTask() {
+    axios
+      .delete(url + "/tasks/" + props.taskInfo._id)
+      .then((res) => console.log(res.data));
+
+    window.location = "/";
   }
 
   if (props.selected) {
@@ -52,15 +64,23 @@ export default function TaskInfo(props) {
         </div>
         <div className="task-btn-section row p-2">
           <div className="col-6 delete-btn">
-            <button className="btn btn-lg btn-outline-danger">Delete</button>
+            <button
+              className="btn btn-lg btn-outline-danger"
+              onClick={() => deleteTask()}
+            >
+              Delete
+            </button>
           </div>
           <div className="col-6 update-btn">
-            <button className="btn btn-lg btn-outline-warning">Update</button>
+            <Link to={"/tasks/update/" + props.taskInfo._id}>
+              <button className="btn btn-lg btn-outline-warning">Update</button>
+            </Link>
           </div>
         </div>
       </div>
     );
   }
+
   return (
     <div className="container p-2">
       <div

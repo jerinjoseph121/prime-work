@@ -1,7 +1,5 @@
 import React, { Component } from "react";
 import axios from "axios";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
 import ScrollBar from "react-scrollbar";
 import "./AddEmployee.css";
 
@@ -9,11 +7,12 @@ export default class AddEmployee extends Component {
   constructor(props) {
     super(props);
 
+    this.PanelTitle = "Employee Registration";
+    this.PanelButton = "Register Employee";
+
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangePost = this.onChangePost.bind(this);
-    this.onChangeTotalTask = this.onChangeTotalTask.bind(this);
-    this.onChangeAssignedTask = this.onChangeAssignedTask.bind(this);
-    this.onChangeCompletedTask = this.onChangeCompletedTask.bind(this);
+    this.onChangeTasks = this.onChangeTasks.bind(this);
     this.onChangeSalary = this.onChangeSalary.bind(this);
     this.onChangeAddress = this.onChangeAddress.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -22,25 +21,35 @@ export default class AddEmployee extends Component {
       name: "",
       post: "",
       tasks: {
-        totalTask: 0,
-        assignedTask: 0,
-        completedTask: 0,
+        totalTask: "",
+        assignedTask: "",
+        completedTask: "",
       },
       salary: 0,
       address: "",
     };
+
+    this.url = "http://localhost:5000";
   }
 
-  //   componentDidMount() {
-  //     axios.get("http://localhost:5000/users/").then((res) => {
-  //       if (res.data.length > 0) {
-  //         this.setState({
-  //           users: res.data.map((user) => user.username),
-  //           username: res.data[0].username,
-  //         });
-  //       }
-  //     });
-  //   }
+  componentDidMount() {
+    if (this.props.match.params.id !== undefined) {
+      this.PanelTitle = "Edit Employee";
+      this.PanelButton = "Edit Employee";
+
+      axios
+        .get(this.url + "/employees/" + this.props.match.params.id)
+        .then((res) => {
+          this.setState({
+            name: res.data.name,
+            post: res.data.post,
+            tasks: res.data.tasks,
+            salary: res.data.salary,
+            address: res.data.address,
+          });
+        });
+    }
+  }
 
   onChangeName(e) {
     this.setState({ name: e.target.value });
@@ -50,18 +59,20 @@ export default class AddEmployee extends Component {
     this.setState({ post: e.target.value });
   }
 
-  onChangeTotalTask(e) {
-    this.setState({ tasks: { totalTask: e.target.value } });
-  }
-  onChangeAssignedTask(e) {
-    this.setState({ tasks: { assignedTask: e.target.value } });
-  }
-  onChangeCompletedTask(e) {
-    this.setState({ tasks: { completedTask: e.target.value } });
+  onChangeTasks(e) {
+    this.setState((prevState) => {
+      const { tasks } = prevState;
+      const property = e.target.name;
+      const value = Number(e.target.value);
+      if (property === "totalTask") tasks.totalTask = value;
+      else if (property === "assignedTask") tasks.assignedTask = value;
+      else if (property === "completedTask") tasks.completedTask = value;
+      return { tasks };
+    });
   }
 
   onChangeSalary(e) {
-    this.setState({ salary: e.target.value });
+    this.setState({ salary: Number(e.target.value) });
   }
 
   onChangeAddress(e) {
@@ -76,8 +87,8 @@ export default class AddEmployee extends Component {
       post: this.state.post,
       tasks: {
         totalTask: this.state.tasks.totalTask,
-        assignedTask: this.state.assignedTask,
-        completedTask: this.state.completedTask,
+        assignedTask: this.state.tasks.assignedTask,
+        completedTask: this.state.tasks.completedTask,
       },
       salary: this.state.salary,
       address: this.state.address,
@@ -85,12 +96,18 @@ export default class AddEmployee extends Component {
 
     console.log(employee);
 
-    const url = "http://localhost:5000";
-
-    axios
-      .post(url + "/employees/add", employee)
-      .then((res) => console.log(res.data));
-
+    if (this.props.match.params.id !== undefined) {
+      axios
+        .post(
+          this.url + "/employees/update/" + this.props.match.params.id,
+          employee
+        )
+        .then((res) => console.log(res.data));
+    } else {
+      axios
+        .post(this.url + "/employees/add", employee)
+        .then((res) => console.log(res.data));
+    }
     window.location = "/";
   }
 
@@ -107,7 +124,7 @@ export default class AddEmployee extends Component {
         >
           <div className="container employee-add-form">
             <h3 className="text-center p-2 add-employee-title">
-              Employee Registration
+              {this.PanelTitle}
             </h3>
             <form onSubmit={this.onSubmit}>
               <div className="form-group input-group input-group-lg p-2">
@@ -146,20 +163,26 @@ export default class AddEmployee extends Component {
                 <input
                   type="text"
                   className="form-control"
+                  name="totalTask"
                   placeholder="Total Tasks"
-                  onChange={this.onChangeTotalTask}
+                  value={this.state.tasks.totalTask}
+                  onChange={this.onChangeTasks}
                 />
                 <input
                   type="text"
                   className="form-control"
+                  name="assignedTask"
                   placeholder="Assigned Tasks"
-                  onChange={this.onChangeAssignedTask}
+                  value={this.state.tasks.assignedTask}
+                  onChange={this.onChangeTasks}
                 />
                 <input
                   type="text"
                   className="form-control"
+                  name="completedTask"
                   placeholder="Completed Tasks"
-                  onChange={this.onChangeCompletedTask}
+                  value={this.state.tasks.completedTask}
+                  onChange={this.onChangeTasks}
                 />
               </div>
               <div className="form-group input-group input-group-lg p-2">
@@ -192,7 +215,7 @@ export default class AddEmployee extends Component {
               <div className="form-group text-center">
                 <input
                   type="submit"
-                  value="Register Employee"
+                  value={this.PanelButton}
                   className="btn btn-primary btn-large"
                 />
               </div>

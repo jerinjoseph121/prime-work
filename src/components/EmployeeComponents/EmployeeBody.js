@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import ScrollBar from "react-scrollbar";
 import "./EmployeeBody.css";
@@ -15,8 +16,6 @@ export default function Body(props) {
   const url = "http://localhost:5000";
 
   useEffect(() => {
-    console.log("Hello");
-    console.log(props.id);
     axios
       .get(url + "/employees/" + String(props.id))
       .then((res) => {
@@ -30,6 +29,48 @@ export default function Body(props) {
       })
       .catch((err) => console.log(err));
   }, [props.id]);
+
+  function editTask(task) {
+    const assignedEmp = task.employeesAssigned;
+    const filteredAssignedEmp = assignedEmp.filter(
+      (empId) => empId !== props.id
+    );
+    console.log("Filtered:", filteredAssignedEmp);
+    if (filteredAssignedEmp.length === 0) {
+      axios
+        .delete(url + "/tasks/" + task._id)
+        .then((res) => console.log(res.data));
+    } else {
+      const newTask = {
+        title: task.title,
+        summary: task.summary,
+        employeesAssigned: filteredAssignedEmp,
+        startDate: task.startDate,
+        deadline: task.deadline,
+      };
+      axios
+        .post(url + "/tasks/update/" + task._id, newTask)
+        .then((res) => console.log(res.data));
+    }
+  }
+
+  function deleteEmployee() {
+    axios
+      .get(url + "/tasks/")
+      .then((res) => {
+        console.log("Danger");
+        const taskData = res.data;
+        const filteredTaskData = taskData.filter((task) =>
+          task.employeesAssigned.includes(props.id)
+        );
+        filteredTaskData.map((task) => editTask(task));
+
+        return axios.delete(url + "/employees/" + props.id);
+      })
+      .then((res) => console.log(res.data));
+
+    window.location = "/";
+  }
 
   return (
     <div className="container-fluid p-0 body-panel">
@@ -65,10 +106,19 @@ export default function Body(props) {
           <hr className="employee-details-seperator" />
           <div className="employee-btn-section row">
             <div className="col-6 delete-btn">
-              <button className="btn btn-lg btn-outline-danger">Delete</button>
+              <button
+                className="btn btn-lg btn-outline-danger"
+                onClick={() => deleteEmployee()}
+              >
+                Delete
+              </button>
             </div>
             <div className="col-6 update-btn">
-              <button className="btn btn-lg btn-outline-warning">Update</button>
+              <Link to={"/employees/update/" + props.id}>
+                <button className="btn btn-lg btn-outline-warning">
+                  Update
+                </button>
+              </Link>
             </div>
           </div>
         </div>

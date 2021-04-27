@@ -10,6 +10,9 @@ export default class AddTask extends Component {
   constructor(props) {
     super(props);
 
+    this.PanelTitle = "Task";
+    this.PanelButton = "Add Task";
+
     this.onChangeTitle = this.onChangeTitle.bind(this);
     this.onChangeSummary = this.onChangeSummary.bind(this);
     this.onChangeEmployeesAssigned = this.onChangeEmployeesAssigned.bind(this);
@@ -23,19 +26,49 @@ export default class AddTask extends Component {
       employeesAssigned: [],
       startDate: new Date(),
       deadline: new Date(),
+      totalEmployees: [],
+      defaultEmployees: [],
     };
+
+    this.url = "http://localhost:5000";
   }
 
-  //   componentDidMount() {
-  //     axios.get("http://localhost:5000/users/").then((res) => {
-  //       if (res.data.length > 0) {
-  //         this.setState({
-  //           users: res.data.map((user) => user.username),
-  //           username: res.data[0].username,
-  //         });
-  //       }
-  //     });
-  //   }
+  componentDidMount() {
+    axios.get(this.url + "/employees").then((res) => {
+      this.setState({
+        totalEmployees: res.data,
+      });
+    });
+
+    if (this.props.match.params.id !== undefined) {
+      this.PanelTitle = "Task";
+      this.PanelButton = "Edit Task";
+
+      axios
+        .get(this.url + "/tasks/" + this.props.match.params.id)
+        .then((res) => {
+          this.setState({
+            title: res.data.title,
+            summary: res.data.summary,
+            employeesAssigned: res.data.employeesAssigned,
+            startDate: new Date(res.data.startDate),
+            deadline: new Date(res.data.deadline),
+          });
+
+          const employeeList = this.state.totalEmployees.filter((emp) =>
+            this.state.employeesAssigned.includes(emp._id)
+          );
+          const defaultOptions = employeeList.map((emp) => {
+            return { value: emp._id, label: emp.name };
+          });
+          console.log("Employees:", defaultOptions);
+          this.setState({
+            defaultEmployees: defaultOptions,
+          });
+          console.log("Default: ", this.state.defaultEmployees);
+        });
+    }
+  }
 
   onChangeTitle(e) {
     this.setState({ title: e.target.value });
@@ -46,8 +79,7 @@ export default class AddTask extends Component {
   }
 
   onChangeEmployeesAssigned(e) {
-    console.log(e);
-    // this.setState({ employeesAssigned: e.target.value });
+    this.setState({ employeesAssigned: e.map((emp) => emp.value) });
   }
 
   onChangeStartDate(date) {
@@ -70,15 +102,20 @@ export default class AddTask extends Component {
 
     console.log(task);
 
-    const url = "http://localhost:5000";
-
-    axios.post(url + "/tasks/add", task).then((res) => console.log(res.data));
+    if (this.props.match.params.id !== undefined) {
+      axios
+        .post(this.url + "/tasks/update/" + this.props.match.params.id, task)
+        .then((res) => console.log(res.data));
+    } else {
+      axios
+        .post(this.url + "/tasks/add", task)
+        .then((res) => console.log(res.data));
+    }
 
     window.location = "/";
   }
 
   render() {
-    const arr = ["hello", "wassap", "how are you"];
     return (
       <div className="container-fluid p-3 add-task-body-panel">
         <ScrollBar
@@ -90,7 +127,9 @@ export default class AddTask extends Component {
           contentClassName="body-panel"
         >
           <div className="container add-task-form">
-            <h3 className="text-center p-2 add-task-title">Task</h3>
+            <h3 className="text-center p-2 add-task-title">
+              {this.PanelTitle}
+            </h3>
             <form onSubmit={this.onSubmit}>
               <div className="form-group input-group input-group-lg p-2">
                 <div className="input-group-prepend">
@@ -126,9 +165,10 @@ export default class AddTask extends Component {
                   </span>
                   <Select
                     className="add-task-list"
+                    defaultValue={this.state.defaultEmployees}
                     isMulti
-                    options={arr.map((employee) => {
-                      return { value: employee, label: employee };
+                    options={this.state.totalEmployees.map((employee) => {
+                      return { value: employee._id, label: employee.name };
                     })}
                     onChange={this.onChangeEmployeesAssigned}
                   />
@@ -165,7 +205,7 @@ export default class AddTask extends Component {
               <div className="form-group text-center">
                 <input
                   type="submit"
-                  value="Add Task"
+                  value={this.PanelButton}
                   className="btn btn-primary btn-large"
                 />
               </div>

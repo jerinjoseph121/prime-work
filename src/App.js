@@ -20,7 +20,7 @@ function App() {
       .get(url + "/employees")
       .then((res) => {
         if (res.data.length > 0) changeEmployeeId(res.data[0]._id);
-        console.log(res.data);
+        console.log("App Page:", res.data);
       })
       .catch((err) => console.log(err));
   }, []);
@@ -38,7 +38,12 @@ function App() {
         <Header changePanel={changeMainPanel} panel={panel} />
         <div className="row no-gutters main-body">
           <div className="col-4">
-            <SidePanel displayEmployee={changeEmployeeId} />
+            <Route
+              path="/"
+              render={(props) => (
+                <SidePanel {...props} displayEmployee={changeEmployeeId} />
+              )}
+            ></Route>
           </div>
           <div className="col-8">
             <Route
@@ -49,7 +54,9 @@ function App() {
             <Route
               exact
               path={["/", "/employees"]}
-              render={(props) => <EmployeeBody {...props} id={employeeId} />}
+              render={(props) => (
+                <EmployeeBody {...props} id={employeeId} isAdd={true} />
+              )}
             />
             <Route
               path="/calendar"
@@ -57,12 +64,12 @@ function App() {
             />
             <Route
               exact
-              path="/tasks/add"
+              path={["/tasks/add", "/tasks/update/:id"]}
               render={(props) => <AddTask {...props} />}
             />
             <Route
               exact
-              path="/employees/add"
+              path={["/employees/add", "/employees/update/:id"]}
               render={(props) => <AddEmployee {...props} />}
             />
           </div>
