@@ -6,7 +6,7 @@ export default function EmployeeInfo(props) {
     <div
       className="container p-0 employee-info-body"
       onClick={() => {
-        props.changeEmployee(props.employeeInfo.id);
+        props.changeEmployee(String(props.employeeInfo._id));
       }}
     >
       <div id="employee-name-label">{props.employeeInfo.name}</div>

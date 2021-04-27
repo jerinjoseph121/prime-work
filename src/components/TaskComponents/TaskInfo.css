@@ -1,5 +1,6 @@
 .task-list-item {
   font-size: 50px;
+  border: 2px solid #707070;
 }
 
 .task-list-item:hover {
@@ -13,6 +14,9 @@
 /* .employee-assigned-list {
   padding-left: 50px !important;
 } */
+.task-details {
+  font-size: 30px;
+}
 
 .employee-assigned-name {
   padding-left: 30px !important;
